@@ -24,6 +24,15 @@ public class Digraph {
 		return verts;
 	}
 	
+	/**
+	 * 
+	 * @param code - city code
+	 * @return index of city w/ given code
+	 */
+	public int ind(String code) {
+		return getCity(code).getNum();
+	}
+	
 	public void readCity() {
 		try {
 			Scanner in = new Scanner(new FileReader(datFiles[0]));
@@ -196,7 +205,6 @@ public class Digraph {
 			}
 			if (!verts[j].isVisited()) {
 				vs.add(i); // +1 changes index in array to City Num
-				verts[j].toggle(); // visit vertex
 			}
 		}
 		

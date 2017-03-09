@@ -5,108 +5,66 @@ import java.util.Stack;
 
 public class Project3 {
 	
-	public static void shortestPath(Digraph g,
-			String source, 
-			String destination, 
-			Stack<Integer> path) {
+	public static void shortestPath(Digraph g, String source, String destination) {
+		PriorityQueue<GraphNode> heap = new PriorityQueue<>();
+		Stack<Integer> pathStk = new Stack<Integer>();
 		Vertex[] verts = g.getVerts();
-		boolean done = false;
-		int vert = 0;
-		PriorityQueue<Vertex> visitedVerts = new PriorityQueue<Vertex>();
+		GraphNode node;
+		int[] prev = new int[21];
+		int src = g.ind(source);
+		int dst = g.ind(destination);
+		double altDistance, minDistance;
+		boolean found = false;
 		
 		for (int i = 1; i < verts.length; ++i) {
-			Vertex vertex = verts[i];
-			if (vertex.getCity().getCode().equals(source)) {
-				vert = vertex.ind();
-			}
-			if (vertex.isVisited()) {
-				vertex.toggle();
-			}
-			dist[i] = Double.POSITIVE_INFINITY; // infinity
-			prev[i] = -2; // undefined
+			verts[i].setValue(Double.POSITIVE_INFINITY);
+			if (verts[i].isVisited())
+				verts[i].toggle();
 		}
 		
-		verts[g.getCity(source).getNum()].toggle();
-	}
-	
-	/*public static void shortestPath(Digraph g, String source, String destination) {
-		Vertex[] verts = g.getVerts();
-		boolean foundTarget = false;
-		int target = Digraph.getCity(destination).getNum();
-		int vert = 0;
-		Double[] dist = new Double[verts.length];
-		int[] prev = new int[verts.length]; // index of previous vertex
-		PriorityQueue<Integer> heap = new PriorityQueue<Integer>();
-		Stack<Integer> stk = new Stack<Integer>();
+		verts[src].setValue(0.0);
+		heap.add(new GraphNode(g.ind(source), 0, 0));
 		
-		// set all initial values
-		for (int i = 1; i < verts.length; ++i) {
-			Vertex vertex = verts[i];
-			if (vertex.getCity().getCode().equals(source)) {
-				vert = vertex.ind();
-			}
-			if (vertex.isVisited()) {
-				vertex.toggle();
-			}
-			dist[i] = Double.POSITIVE_INFINITY; // infinity
-			prev[i] = -2; // undefined
-		}
-		if (vert == 0) { // if city not found
-			throw new IndexOutOfBoundsException("shortestpath(find)");
-		}
-		dist[vert] = 0.0;
-		
-		for (int i = 1; i < verts.length; ++i) {
-			heap.add(verts[i].ind());
-		}
 		while (!heap.isEmpty()) {
-			int u = heap.peek(); // city number
-			//System.out.println("u: " + u); // FIXME
-			if (dist[u] < 0.0) {
-				System.out.println("inf value"); // FIXME
+			node = heap.remove();
+			//System.out.println("node: " + node.num()); // FIXME
+			for (Integer v : g.getNeighbors(node.num())) {
+				//System.out.println(v); // FIXME
+				if (!verts[v].isVisited()) { // if node is not visited
+					verts[v].toggle(); // visit the node
+					
+					// distance from source to node + distance of new edge
+					altDistance = verts[node.num()].getVal() + 
+							Digraph.distBetween(node.num(), v);
+					minDistance = Math.min(verts[v].getVal(), altDistance);
+					verts[v].setValue(minDistance);
+					prev[v] = node.num();
+					
+					// and add it to the Queue
+					heap.add(new GraphNode(v, node.num(), minDistance));
+				}
+				if (v == src) {
+					found = true;
+				}
+			}
+			if (found == true) {
 				break;
 			}
-			heap.remove();
-			for (int v : g.getNeighbors(u)) {
-				prev[v] = u;
-				Double altDistance = dist[u] + Digraph.distBetween(u, v);
-				//System.out.println("altd: " + altDistance); // FIXME
-				
-				if (altDistance < dist[v]) {
-					dist[v] = altDistance;
-					prev[v] = u;
-				}
-				//System.out.println("Compare: " + cityNumber + " " + target); // FIXME
-				if (v == target) {
-					foundTarget = true;
-					break;
-				}
-			}
-			if (foundTarget == true) break;
 		}
-		if (foundTarget) { // trace back path and print path in order
-			//System.out.println("Found target"); // FIXME
-			int start = Digraph.getCity(source).getNum();
-			while (target != start) {
-				//System.out.println("target: " + target); // FIXME
-				stk.add(target);
-				target = prev[target];
-			}
-			stk.add(start);
-			System.out.println("The minimum distance between " +
-					Digraph.getCity(source).getName() + " and " +
-					Digraph.getCity(destination).getName() + " is " +
-					getTotalDist(stk) + " through route: ");
-			while (!stk.isEmpty()) {
-				System.out.print(verts[stk.pop()].getCity().getCode() + ", ");
-			}
-			System.out.println();
+		
+		while (dst != src) { // city number stack from source to destination
+			pathStk.add(dst);
+			dst = prev[dst];
 		}
-		else {
-			//System.out.println("else"); // FIXME
-			throw new IndexOutOfBoundsException("shortestpath(path not found)");
+
+		System.out.println("The minimum distance between " + 
+				Digraph.getCity(source).getName() + " and " +
+				Digraph.getCity(destination).getName() + " is " +
+				getTotalDist(pathStk) + " through the route: ");
+		while (!pathStk.isEmpty()) {
+			System.out.println(verts[pathStk.pop()].getCity().getCode() + ", ");
 		}
-	}*/
+	}
 	
 	public static int getTotalDist(Stack<Integer> stk) {
 		int total = 0, curr = stk.pop(), prev;
