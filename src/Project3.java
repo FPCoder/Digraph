@@ -9,51 +9,51 @@ public class Project3 {
 		Vertex[] verts = g.getVerts();
 		boolean foundTarget = false;
 		int target = Digraph.getCity(destination).getNum();
-		int v = 0;
-		int[] dist = new int[verts.length];
+		int vert = 0;
+		Double[] dist = new Double[verts.length];
 		int[] prev = new int[verts.length]; // index of previous vertex
 		PriorityQueue<Integer> heap = new PriorityQueue<Integer>();
 		Stack<Integer> stk = new Stack<Integer>();
 		
 		// set all initial values
-		for (int i = 0; i <= verts.length; ++i) {
+		for (int i = 1; i < verts.length; ++i) {
 			Vertex vertex = verts[i];
 			if (vertex.getCity().getCode().equals(source)) {
-				v = vertex.ind();
+				vert = vertex.ind();
 			}
 			if (vertex.isVisited()) {
 				vertex.toggle();
 			}
-			dist[i] = -1; // infinity
-			prev[i] = -1; // undefined
+			dist[i] = Double.POSITIVE_INFINITY; // infinity
+			prev[i] = -2; // undefined
 		}
-		dist[v - 1] = 0;
-		
-		if (v == 0) { // if city not found
+		if (vert == 0) { // if city not found
 			throw new IndexOutOfBoundsException("shortestpath(find)");
 		}
+		dist[vert] = 0.0;
 		
-		for (Vertex vertex : verts) {
-			heap.add(vertex.ind());
+		for (int i = 1; i < verts.length; ++i) {
+			heap.add(verts[i].ind());
 		}
 		while (!heap.isEmpty()) {
 			int u = heap.peek(); // city number
-			System.out.println("u: " + u); // FIXME
-			/*if (dist[u - 1] < 0) {
+			//System.out.println("u: " + u); // FIXME
+			if (dist[u] < 0.0) {
 				System.out.println("inf value"); // FIXME
 				break;
-			}*/
+			}
 			heap.remove();
-			for (int cityNumber : g.getNeighbors(u)) {
-				int altDistance = addInf(dist[u - 1], Digraph.distBetween(u, cityNumber));
-				System.out.println("altd: " + altDistance); // FIXME
+			for (int v : g.getNeighbors(u)) {
+				prev[v] = u;
+				Double altDistance = dist[u] + Digraph.distBetween(u, v);
+				//System.out.println("altd: " + altDistance); // FIXME
 				
-				if (compareInf(altDistance, dist[cityNumber - 1]) > 0) {
-					dist[cityNumber - 1] = altDistance;
-					prev[cityNumber - 1] = u;
+				if (altDistance < dist[v]) {
+					dist[v] = altDistance;
+					prev[v] = u;
 				}
-				System.out.println("Compare: " + cityNumber + " " + target); // FIXME
-				if (cityNumber == target) {
+				//System.out.println("Compare: " + cityNumber + " " + target); // FIXME
+				if (v == target) {
 					foundTarget = true;
 					break;
 				}
@@ -61,35 +61,44 @@ public class Project3 {
 			if (foundTarget == true) break;
 		}
 		if (foundTarget) { // trace back path and print path in order
-			System.out.println("Found target"); // FIXME
+			//System.out.println("Found target"); // FIXME
 			int start = Digraph.getCity(source).getNum();
 			while (target != start) {
-				System.out.println("target: " + target); // FIXME
+				//System.out.println("target: " + target); // FIXME
 				stk.add(target);
-				target = prev[target - 1];
+				target = prev[target];
 			}
-			System.out.print("The minimum distance between " +
+			stk.add(start);
+			System.out.println("The minimum distance between " +
 					Digraph.getCity(source).getName() + " and " +
-					Digraph.getCity(destination) + " is: ");
+					Digraph.getCity(destination).getName() + " is " +
+					getTotalDist(stk) + " through route: ");
 			while (!stk.isEmpty()) {
-				System.out.print(verts[stk.pop() - 1].getCity().getCode() + ", ");
+				System.out.print(verts[stk.pop()].getCity().getCode() + ", ");
 			}
+			System.out.println();
 		}
 		else {
-			System.out.println("else"); // FIXME
-			throw new IndexOutOfBoundsException("shortestpath(end)");
+			//System.out.println("else"); // FIXME
+			throw new IndexOutOfBoundsException("shortestpath(path not found)");
 		}
 	}
 	
-	public static int addInf(int a, int b) {
-		if (a < 0) return -1;
-		if (b < 0) return -1;
-		return a + b;
-	}
-	public static int compareInf(int a, int b) {
-		if (a < 0) return 1;
-		if (b < 0) return -1;
-		return a - b;
+	public static int getTotalDist(Stack<Integer> stk) {
+		int total = 0, curr = stk.pop(), prev;
+		Stack<Integer> reverse = new Stack<Integer>();
+		
+		reverse.push(curr);
+		while (!stk.isEmpty()) {
+			prev = stk.pop();
+			reverse.add(prev);
+			total += Digraph.distBetween(curr, prev);
+			curr = prev;
+		}
+		while (!reverse.isEmpty()) {
+			stk.push(reverse.pop());
+		}
+		return total;
 	}
 	
 	public static void main(String[] args) {

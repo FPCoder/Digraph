@@ -89,7 +89,8 @@ public class Digraph {
 	 * @return City with matching cityCode, or null if no match found
 	 */
 	public static City getCity(String code) {
-		for (Vertex v : verts) {
+		for (int i = 1; i < verts.length; ++i) {
+			Vertex v = verts[i];
 			if (v.getCity().getCode().equals(code)) {
 				return v.getCity();
 			}
@@ -172,6 +173,7 @@ public class Digraph {
 		
 		if (ed == null) {
 			System.out.println("Road not found");
+			return;
 		}
 		
 		edges[ed.src()][ed.dst()] = null;
