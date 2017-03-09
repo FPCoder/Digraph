@@ -14,31 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/City.java</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Desktop/CS%20241/City-Road-Graph/City.java</locationURI>
-		</link>
-		<link>
-			<name>src/Digraph.java</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Desktop/CS%20241/City-Road-Graph/Digraph.java</locationURI>
-		</link>
-		<link>
-			<name>src/Edge.java</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Desktop/CS%20241/City-Road-Graph/Edge.java</locationURI>
-		</link>
-		<link>
-			<name>src/Road.java</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Desktop/CS%20241/City-Road-Graph/Road.java</locationURI>
-		</link>
-		<link>
-			<name>src/Vertex.java</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Desktop/CS%20241/City-Road-Graph/Vertex.java</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
