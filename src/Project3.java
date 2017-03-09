@@ -5,7 +5,31 @@ import java.util.Stack;
 
 public class Project3 {
 	
-	public static void shortestPath(Digraph g, String source, String destination) {
+	public static void shortestPath(Digraph g,
+			String source, 
+			String destination, 
+			Stack<Integer> path) {
+		Vertex[] verts = g.getVerts();
+		boolean done = false;
+		int vert = 0;
+		PriorityQueue<Vertex> visitedVerts = new PriorityQueue<Vertex>();
+		
+		for (int i = 1; i < verts.length; ++i) {
+			Vertex vertex = verts[i];
+			if (vertex.getCity().getCode().equals(source)) {
+				vert = vertex.ind();
+			}
+			if (vertex.isVisited()) {
+				vertex.toggle();
+			}
+			dist[i] = Double.POSITIVE_INFINITY; // infinity
+			prev[i] = -2; // undefined
+		}
+		
+		verts[g.getCity(source).getNum()].toggle();
+	}
+	
+	/*public static void shortestPath(Digraph g, String source, String destination) {
 		Vertex[] verts = g.getVerts();
 		boolean foundTarget = false;
 		int target = Digraph.getCity(destination).getNum();
@@ -82,7 +106,7 @@ public class Project3 {
 			//System.out.println("else"); // FIXME
 			throw new IndexOutOfBoundsException("shortestpath(path not found)");
 		}
-	}
+	}*/
 	
 	public static int getTotalDist(Stack<Integer> stk) {
 		int total = 0, curr = stk.pop(), prev;
