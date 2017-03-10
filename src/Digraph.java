@@ -1,31 +1,49 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Scanner;
 
 
+/**
+ * A Directional Graph contining all the information from the files
+ * city.dat and road.dat
+ * Consists of Cities(Vertecies) and Roads(Edges).
+ * @author evan
+ *
+ */
 public class Digraph {
 	private static Vertex[] verts; // vertices
 	private static Edge[][] edges; // list of origin cities w/ destinations
 	private String[] datFiles = { "city.dat", "road.dat" };
 	
+	/**
+	 * Default Constructor
+	 * Memory allocated for the vertices and edges cannot be increased,
+	 * so the arrays cannot be expanded.
+	 */
 	public Digraph() {
 		verts = new Vertex[21];
 		edges = new Edge[21][21];
 	}
 	
+	/**
+	 * Reads the city and road files
+	 */
 	public void init() {
 		readCity();
 		readRoad();
 	}
 	
+	/**
+	 * Returns an array of vertices for manipulation in the driver
+	 * @return array of Vertices
+	 */
 	public Vertex[] getVerts(){
 		return verts;
 	}
 	
 	/**
-	 * 
+	 * Find the CityNumber (or index) from the given city code.
 	 * @param code - city code
 	 * @return index of city w/ given code
 	 */
@@ -33,6 +51,9 @@ public class Digraph {
 		return getCity(code).getNum();
 	}
 	
+	/**
+	 * Reads city.dat and places the data into "verts".
+	 */
 	public void readCity() {
 		try {
 			Scanner in = new Scanner(new FileReader(datFiles[0]));
@@ -44,7 +65,7 @@ public class Digraph {
 			
 			while (in.hasNext()) {
 				nextEntry = in.nextLine(); // prepare next line
-				entry = new Scanner(nextEntry);
+				entry = new Scanner(nextEntry); // read next line from city.dat
 				
 				num = entry.nextInt();
 				code = entry.next();
@@ -65,16 +86,21 @@ public class Digraph {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Read road.dat and places the data into "edges".
+	 */
 	public void readRoad() {
 		try {
 			Scanner in = new Scanner(new FileReader(datFiles[1]));
-			String nextEntry = in.nextLine();
+			String nextEntry;
 			Road rd;
 			Scanner entry;
 			int start, end, dist;
 			
 			while (in.hasNext()) {
-				entry = new Scanner(nextEntry);
+				nextEntry = in.nextLine(); // put line into String var
+				entry = new Scanner(nextEntry); // read next line from file
 				
 				start= entry.nextInt();
 				end = entry.nextInt();
@@ -83,7 +109,6 @@ public class Digraph {
 
 				edges[start][end] = new Edge(rd, start, end);
 
-				nextEntry = in.nextLine();
 				entry.close();
 			}
 			in.close();
@@ -99,17 +124,21 @@ public class Digraph {
 	 */
 	public static City getCity(String code) {
 		for (int i = 1; i < verts.length; ++i) {
-			Vertex v = verts[i];
-			if (v.getCity().getCode().equals(code)) {
-				return v.getCity();
+			if (verts[i].getCity().getCode().equals(code)) {
+				return verts[i].getCity();
 			}
 		}
 		
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @param source - source of road
+	 * @param destination - end of road
+	 * @return Edge var between cities
+	 */
 	public static Edge getEdge(String source, String destination) {
-		System.out.println("src: " + source + " dst: " + destination); // FIXME
 		int src = getCity(source).getNum();
 		int dst = getCity(destination).getNum();
 		
@@ -129,6 +158,10 @@ public class Digraph {
 		return edges[src][dst].getData().getDist();
 	}
 	
+	/**
+	 * Display information for a city, given the cityCode
+	 * @param code - cityCode for the city being searched
+	 */
 	public static void query(String code) {
 		City ct = getCity(code);
 		
@@ -151,17 +184,17 @@ public class Digraph {
 	 * @param destination - destination of the road
 	 */
 	public static void insert(String source, String destination, int dist) {
-		if (getEdge(source, destination) == null) {
+		if (getEdge(source, destination) == null) { // if no existing road, add it
 			int src = getCity(source).getNum();
 			int dst = getCity(destination).getNum();
 			edges[src][dst] = new Edge(new Road(dist), src, dst);
 		}
-		else {
+		else { // road already exists
 			System.out.println("Road already exists between these cities");
 		}
 	}
 	
-	public static void checkEdge(String source, String destination) { // FIXME: debugging roads
+	/*public static void checkEdge(String source, String destination) { // FIXME: debugging roads
 		if (getEdge(source, destination) == null) {
 			System.out.println("Road not found");
 		}
@@ -175,8 +208,13 @@ public class Digraph {
 					verts[dst].getCity().getName() + " is " + 
 					ed.getData().getDist() + ".");
 		}
-	}
+	}*/
 	
+	/**
+	 * Remove a road between two cities.
+	 * @param source - source city
+	 * @param destination - end city
+	 */
 	public void remove(String source, String destination) {
 		Edge ed = getEdge(source, destination);
 		
@@ -189,22 +227,23 @@ public class Digraph {
 	}
 	
 	/**
-	 * 
-	 * @param v - number of city to get neighbors of
-	 * @return - all unvisited neighbor City Nums
+	 * Returns a list of the neighbors for the given cityNumber
+	 * @param v - cityNumber to get neighbors of
+	 * @return - all unvisited neighbors of cityNum City
 	 */
 	public LinkedList<Integer> getNeighbors(int v) {
-		LinkedList<Integer> vs = new LinkedList<Integer>();
+		LinkedList<Integer> vs = new LinkedList<Integer>(); // cityNumbers to ret
 		
+		// read the entire row of a given city, viewing all possible connections
 		for (int i = 0, j = 0; i < verts.length; ++i) {
-			if (edges[v][i] != null) {
-				j = edges[v][i].dst();
+			if (edges[v][i] != null) { // i = edge connecting cities
+				j = edges[v][i].dst(); // j = cityNum of connected city
 			}
 			else {
 				continue;
 			}
 			if (!verts[j].isVisited()) {
-				vs.add(i); // +1 changes index in array to City Num
+				vs.add(i);
 			}
 		}
 		

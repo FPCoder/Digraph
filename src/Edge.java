@@ -1,9 +1,20 @@
 
+/**
+ * Contains data from road.dat and the connections between the cities.
+ * @author evan
+ *
+ */
 public class Edge implements Comparable {
 	private Road data;
-	private int sourceInd;
-	private int destinationInd;
+	private int sourceInd; // source index
+	private int destinationInd; // destination index
 	
+	/**
+	 * Parametized Constructor
+	 * @param r - Road data
+	 * @param s - source index
+	 * @param d - destination index
+	 */
 	public Edge(Road r, int s, int d) { 
 		data = r;
 		sourceInd = s;

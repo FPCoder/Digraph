@@ -1,9 +1,20 @@
 
+/**
+ * Used for determining the shortest path between two cities.
+ * @author evan
+ *
+ */
 public class GraphNode implements Comparable {
-	private int cityNumber;
-	private int previousVertex;
-	private double distance;
+	private int cityNumber; // cityNum of the node
+	private int previousVertex; // cityNum of the previous node
+	private double distance; // between the two nodes
 	
+	/**
+	 * Parametized Constructor
+	 * @param num - cityNum
+	 * @param prev - previous cityNum
+	 * @param dist - distance between nodes
+	 */
 	public GraphNode(int num, int prev, double dist) {
 		cityNumber = num;
 		previousVertex = prev;

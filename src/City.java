@@ -1,4 +1,9 @@
 
+/**
+ * Holds only the data from the file city.dat
+ * @author evan
+ *
+ */
 public class City {
 	private int cityNum;
 	private String cityCode;
